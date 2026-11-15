@@ -137,7 +137,7 @@ everything works except the raw-hotspot CSV download, which returns nothing.
     docs/       demo video, GIF, screenshots
 
 ## Credits
-**Made with [Claude Code](https://claude.com/claude-code)**, used only for coding. The idea, the method choices and the data decisions are the author's.
+**Made with [Claude Code](https://claude.com/claude-code)**, used for coding.
 
 Hotspots: NASA FIRMS (MODIS Collection 6.1, VIIRS 375 m). Boundaries: Natural Earth via world-atlas. Basemap and charts: D3.
 Built by Muhammadjon Aslonov for the 2026 NASA Space Apps Challenge.
