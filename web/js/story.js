@@ -99,6 +99,17 @@
     ["Bias over the period", f1(raw.region_bias_pct) + "%", f1(best.region_bias_pct) + "%"],
   ].map(([k, a, b]) => `<div class="row"><div class="k">${k}</div><div class="v"><s>${a}</s><span aria-hidden="true">→</span><b>${b}</b></div></div>`).join("");
 
+  // ---- calibration region by region, and borrowed from the other regions ----
+  fetch("data/crossval.json").then(r => (r.ok ? r.json() : null)).then(x => {
+    if (!x || !x.regions.length) return;
+    $("xval-card").hidden = false;
+    $("xval-sub").textContent = `Held-out months ${x.test.replace("..", " to ")}. The headline numbers above sum all loaded regions, where over- and under-estimates cancel. Each region on its own is less forgiving, and a ratio borrowed from the other regions is clearly worse than one fitted on the region's own overlap.`;
+    const name = r => r.region.replace(/_/g, " "), pc = v => `${v >= 0 ? "+" : ""}${f1(v)}%`;
+    $("xval").innerHTML = "<thead><tr><th>Region</th><th>MODIS unscaled bias</th><th>Fitted on its own overlap (shipped)</th><th>Borrowed from the other regions</th></tr></thead><tbody>"
+      + x.regions.map(r => { const o = r.tile_ratio_own_region, b = r[r.best];
+        return `<tr><th>${name(r)}</th><td>${pc(r.raw_modis.region_bias_pct)}</td><td><b>${f1(o.region_mape_pct)}% error</b>, R² ${f2(o.region_r2)}, bias ${pc(o.region_bias_pct)}</td><td>${f1(b.region_mape_pct)}% error, R² ${f2(b.region_r2)}, bias ${pc(b.region_bias_pct)}</td></tr>`; }).join("") + "</tbody>";
+  }).catch(() => {});
+
   // ---- continuity after Suomi NPP ----
   const n = cal.noaa, i1 = iVend, i21 = idx("2021-01");
   $("continuity-sub").textContent = `Suomi NPP stopped delivering new data on 2 November 2026. NOAA-20 and NOAA-21 carry the same kind of sensor, so each is rescaled to Suomi NPP on the months they share. The record continues from NOAA-20.`;

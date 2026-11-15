@@ -85,3 +85,9 @@ body.app { display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: hid
 }
 .place .clear { border: 1px solid var(--line-2); background: var(--surface-2); color: var(--ink); border-radius: 8px; padding: 4px 10px; font-size: .82rem; font-weight: 600; cursor: pointer; }
 .place .clear:hover { border-color: var(--accent); color: var(--accent); }
+
+.alerts { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.alerts button { width: 100%; display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: baseline; text-align: left; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); color: var(--ink); font: inherit; cursor: pointer; }
+.alerts button:hover, .alerts button:focus-visible { border-color: var(--ink); }
+.alerts b { font-variant-numeric: tabular-nums; }
+.alerts small { color: var(--muted); font-variant-numeric: tabular-nums; }

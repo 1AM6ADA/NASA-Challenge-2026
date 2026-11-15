@@ -51,3 +51,10 @@
 }
 .alt-band { background: var(--bg); }
 .score .v em { font-style: normal; color: var(--muted); font-size: .85rem; }
+
+.xval { margin-top: 20px; }
+.wrap-tbl { overflow-x: auto; }
+.xtab { width: 100%; border-collapse: collapse; font-size: .88rem; font-variant-numeric: tabular-nums; }
+.xtab th, .xtab td { text-align: left; padding: 10px 12px; border-top: 1px solid var(--line); vertical-align: top; }
+.xtab thead th { color: var(--muted); font-weight: 500; font-size: .78rem; border-top: 0; }
+.xtab tbody th { text-transform: capitalize; font-weight: 600; }

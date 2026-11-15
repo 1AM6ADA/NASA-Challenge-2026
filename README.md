@@ -8,6 +8,8 @@ The website is also the presentation.
 > **Live site:** https://1am6ada.github.io/NASA-Challenge-2026/  ·  **Demo video:** [docs/demo.mp4](docs/demo.mp4)
 > (the hotspot-CSV download needs the local server, see [Run it](#run-it))
 
+> **Why only part of the world is loaded:** the full FIRMS download is tens of gigabytes, and the internet in Dushanbe, Tajikistan, where this was built, is slow (about 3 KB/s for some large downloads). Central Asia, Europe and South Asia finished; East Asia is partial. The pipeline and the map are world-wide, so adding a region is one command (`python3 pipeline/01_world.py africa`) on a faster connection.
+
 ![Demo of the whole project](docs/demo.gif)
 
 ## What it does
@@ -20,6 +22,8 @@ The website is also the presentation.
 | Compare the current month with the historical median | Headline card ("19% below a normal November so far"), **Vs normal** map and calendar, Season chart |
 | Colour ramps for similarities and differences | Sequential ramp for counts, diverging ramp for anomalies, light and dark theme |
 | Downloadable CSV of hotspots | **Data** tab: raw hotspots in the selected area (CSV), plus the monthly series (CSV) |
+| Early warning: what is unusual *now* | **Most above normal** list: countries ranked by anomaly for the chosen month, one click to open |
+| Share a view | **Copy link** stores place and month in the address (`explore.html#m=2025-10&place=India`) |
 | Accessible, interactive | Keyboard (arrows, space), ARIA labels, table view of the calendar |
 
 ### Story page: why the records cannot be compared, and how they are
@@ -64,6 +68,7 @@ data/agg/tile_month.pkl.xz
 data/agg/harmonized.npz, calibration_metrics.json
    │  06_export.py     matrix.bin (tiles x months, fixed point), meta.json, series.json
    │  07_countries.py  country membership of every tile (Natural Earth), boundaries for the CSV endpoint
+   │  08_crossval.py   leave-one-region-out check of the calibration -> web/data/crossval.json
    ▼
 web/data/*   ──►  static site (D3, canvas hex map)    +   api/server.py (only for raw-hotspot CSV)
 ```
@@ -93,6 +98,18 @@ web/data/*   ──►  static site (D3, canvas hex map)    +   api/server.py (o
 
 Full numbers: `data/agg/calibration_metrics.json`. Tile-level correlation of rescaled MODIS with VIIRS is 0.92.
 
+**Region by region, and does a calibration travel?** (`pipeline/08_crossval.py`, shown on the Story page.) The table above sums all loaded
+regions, where over- and under-estimates partly cancel. Per region, on the same held-out months:
+
+| Region | Fitted on its own overlap (shipped) | Ratio borrowed from the other regions |
+|---|---|---|
+| Central Asia | 18.6% error, R² 0.93, bias +7.7% | 32.8% error, R² 0.55, bias +31.7% |
+| Europe | 19.4% error, R² 0.88, bias +13.8% | 38.5% error, R² 0.46, bias +34.9% |
+| South Asia | 17.4% error, R² 0.97, bias -6.6% | 37.6% error, R² 0.68, bias -38.6% |
+
+Takeaway: the MODIS/VIIRS relationship differs by region (small agricultural fires, overpass time), so the calibration has to be fitted on
+each region's own overlap years, which the pipeline does. A single global ratio would not be trustworthy. The headline 9.7% is for the combined area.
+
 ## Run it
 Site only (data is in the repo, nothing to download):
 
@@ -104,7 +121,7 @@ or with Docker:
 
 Rebuild the derived data from what is committed (works right after `git clone`):
 
-    python3 pipeline/run_all.py --from 04      # runs 04-07 with timing, then pipeline/validate.py
+    python3 pipeline/run_all.py --from 04      # runs 04-08 with timing, then pipeline/validate.py
     # or: docker compose --profile pipeline run --rm pipeline
 
 Rebuild everything from NASA (needs a free FIRMS MAP_KEY in `.env` as `FIRMS_MAP_KEY=...`, about 1.6 GB of downloads):
@@ -126,6 +143,7 @@ everything works except the raw-hotspot CSV download, which returns nothing.
   world-wide; the other seven boxes in `pipeline/regions.py` are download-and-run (`01_world.py`), the site picks them up automatically.
 - Months 2000-11..2002-06 rest on Terra only and are the least certain. 2002-07..2012-01 are MODIS rescaled; from 2012-02 VIIRS SNPP is used as measured.
 - Hotspot counts measure satellite-detected burning, not burned area or fire size. Cloud, overpass time and detection limits still apply.
+- The calibration assumes the MODIS/VIIRS relationship was stable over time. In crop-burning regions, where fires are small and lit in the afternoon, overpass time can confound long trends (for example the very low recent Octobers in northern India are partly real decline, but the size of the drop is uncertain).
 - NOAA-21 is calibrated on a short window (2023-03..2025-03).
 - A static host (GitHub Pages) serves everything except the raw-hotspot CSV, which needs `api/server.py`.
 

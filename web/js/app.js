@@ -82,6 +82,7 @@
     drawKpi();
     if (cal) cal.setSelected(m);
     if (seas) seas.setSelected(m);
+    drawAlerts(); writeHash();
     if (app.tab === "compare") renderCompare();
     if (app.tab === "data") updateDownloads();
   }
@@ -157,6 +158,37 @@
   app.pins.A = { sel: { kind: "all", tiles: FC.allTiles, km2: FC.loadedKm2 }, m: last };
   app.pins.B = { sel: { kind: "all", tiles: FC.allTiles, km2: FC.loadedKm2 }, m: Math.max(0, last - 60) };
 
+  // ---- where is it unusual in the chosen month: countries ranked by anomaly ----
+  const alertsEl = $("alerts");
+  let countrySeries = null;
+  function drawAlerts() {
+    countrySeries = countrySeries || FC.countries.map(c => FC.areaSeries(c.tiles));  // once: 116 countries x all months
+    const m = app.m, rows = FC.countries.map((c, i) => {
+      const v = countrySeries[i], an = FC.anomaly(v, m);
+      return { name: c.name, an, n: v[m], med: FC.looMedian(v, m) };
+    }).filter(r => r.an !== null && r.n >= 300 && r.med >= 150);  // small counts swing wildly; keep places with real fire
+    rows.sort((a, b) => b.an - a.an);
+    const top = rows.slice(0, 5);
+    $("alerts-sec").hidden = !top.length;
+    $("alerts-title").textContent = `Most above normal, ${FC.monthLabel(m)}`;
+    $("alerts-sub").textContent = "Countries with at least 300 fire cell-days that month, against their own normal for it. Click one to open it.";
+    alertsEl.innerHTML = top.map(r => `<li><button data-place="${r.name}"><span>${r.name}</span><b>${pct(r.an)}</b><small>${FC.fmt(r.n)} cell-days</small></button></li>`).join("");
+  }
+  alertsEl.addEventListener("click", e => { const b = e.target.closest("[data-place]"); if (b) map.selectCountry(b.dataset.place); });
+
+  // ---- share link: place and month live in the address ----
+  function writeHash() {
+    const q = new URLSearchParams({ m: FC.months[app.m].slice(0, 7) });
+    if (app.sel.kind === "country") q.set("place", app.sel.name);
+    history.replaceState(null, "", "#" + q);
+  }
+  $("share").addEventListener("click", async () => {
+    writeHash();
+    try { await navigator.clipboard.writeText(location.href); $("share").textContent = "Copied"; } catch (e) { $("share").textContent = "Link is in the address bar"; }
+    setTimeout(() => { $("share").textContent = "Copy link"; }, 1800);
+  });
+  const hashQ = new URLSearchParams(location.hash.slice(1));
+
   // ---- tabs ----
   document.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", () => {
     app.tab = b.dataset.tab;
@@ -210,11 +242,14 @@
     $("month-label").textContent = FC.monthLabel(app.m);
     $("month-src").textContent = srcName(app.m);
     timeline.set(app.vals, app.m);
-    drawKpi(); drawCalendar(); drawSeason();
+    drawKpi(); drawCalendar(); drawSeason(); drawAlerts(); writeHash();
     if (app.tab === "data") updateDownloads();
   }
   FC.onTheme(() => { map.refreshTheme(); timeline.set(app.vals, app.m); refresh(); renderCompare(); });
   ready = true;
   refresh();
   renderCompare();
+  const hp = hashQ.get("place"), hm = FC.months.findIndex(x => x.startsWith(hashQ.get("m") || "never"));
+  if (hp && FC.countries.some(c => c.name === hp)) map.selectCountry(hp);
+  if (hm >= 0) setMonth(hm);
 })();
