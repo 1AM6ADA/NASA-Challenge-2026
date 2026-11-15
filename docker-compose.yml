@@ -1,0 +1,22 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # the CSV download endpoint reads these; the charts only need web/data (baked into the image)
+      - ./data/clean:/app/data/clean:ro
+      - ./data/boundaries:/app/data/boundaries:ro
+    restart: unless-stopped
+
+  # Re-run calibration, harmonization and export from data/agg: docker compose run --rm pipeline
+  # Needs FIRMS_MAP_KEY in .env only for the download step (docker compose run --rm pipeline python pipeline/01_world.py).
+  pipeline:
+    build: .
+    profiles: ["pipeline"]
+    env_file: [.env]
+    volumes:
+      - ./data:/app/data
+      - ./web/data:/app/web/data
+      - ./logs:/app/logs
+    entrypoint: ["sh", "-c", "for s in 04_calibrate 05_harmonize 06_export 07_countries; do python pipeline/$s.py || exit 1; done"]

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Burning Calendar</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/story.css">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="index.html"><i></i><span>Burning Calendar</span></a>
+  <nav><a href="index.html" aria-current="page">Story</a><a href="explore.html">Explorer</a></nav>
+  <span class="spacer"></span>
+  <button class="iconbtn" id="theme" aria-label="Toggle light and dark theme" title="Theme">
+    <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</header>
+
+<main>
+<section class="hero"><div class="hero-grid"><div>
+  <p class="eyebrow">NASA Space Apps 2026 · MODIS and VIIRS hot spots</p>
+  <h1>A fire record that no longer cares which satellite saw it</h1>
+  <p class="lede">Two satellite families have counted burning land since 2000, and their numbers cannot be compared. We rescaled them into one monthly record, so a fire manager can ask whether this month is unusual for this place.</p>
+  <div class="actions">
+    <a class="btn" href="explore.html">Open the explorer</a>
+    <a class="btn ghost" href="#problem">How it works</a>
+  </div>
+  <div class="facts" id="facts"></div>
+  </div>
+  <a class="hero-vis" href="explore.html" aria-label="Open the explorer"><div id="hero-cal"></div><span>Every month since 2000 in one grid. Darker means more fire.</span></a>
+  </div></section>
+
+<section id="problem" class="story">
+  <div>
+    <div class="step" data-step="0">
+      <h2>MODIS gives the long view</h2>
+      <p>The MODIS sensors on Terra and Aqua have counted fires at 1&nbsp;km since late 2000. Both satellites are near the end of their lives.</p>
+    </div>
+    <div class="step" data-step="1">
+      <h2>VIIRS replaces it, and counts more</h2>
+      <p>VIIRS sees fires at 375&nbsp;m and passes at different times. Over the same ground since 2012 it reports about <b data-fill="ratio">2.5×</b> as much burning.</p>
+    </div>
+    <div class="step" data-step="2">
+      <h2>Joining them raw invents a surge</h2>
+      <p>Switch from MODIS to VIIRS in 2012 and the level of the record more than doubles for no reason except the sensor change. A calendar built this way would call every year since then unusual.</p>
+    </div>
+  </div>
+  <div class="story-chart"><div class="card">
+    <h3 class="ct" id="p-title"></h3><p class="cs" id="p-sub"></p>
+    <div id="chart-problem"></div>
+  </div></div>
+</section>
+
+<section id="harmonize" class="story">
+  <div>
+    <div class="step" data-step="0">
+      <h2>First, count the same thing</h2>
+      <p>The unit is <b>one 1&nbsp;km cell with fire on one day</b>. Several VIIRS pixels inside a cell on the same day count once. Only vegetation fires above a confidence floor are kept.</p>
+    </div>
+    <div class="step" data-step="1">
+      <h2>Learn how one maps to the other</h2>
+      <p>From 2012 both sensors watch the same ground. Each dot is a month. We fit the relationship on <b>2012 to 2018</b> and keep <b>2019 onward</b> as a test the method never saw.</p>
+    </div>
+    <div class="step" data-step="2">
+      <h2>Carry it back to 2000</h2>
+      <p>MODIS history is rescaled into VIIRS terms. Before Aqua launched in mid-2002 only Terra flew, so those months are first lifted to a Terra plus Aqua equivalent. From 2012 the record is VIIRS itself.</p>
+    </div>
+    <div class="step" data-step="3">
+      <h2>The sensor stops mattering</h2>
+      <p>One continuous series. The artificial jump is gone, and what remains is what a manager needs: seasons, bad years and anomalies.</p>
+    </div>
+  </div>
+  <div class="story-chart"><div class="card">
+    <h3 class="ct" id="h-title"></h3><p class="cs" id="h-sub"></p>
+    <div id="chart-harmonize-line"></div>
+    <div id="chart-harmonize-scatter" hidden></div>
+  </div></div>
+</section>
+
+<section id="validation" class="band">
+  <div class="wrap">
+    <h2>Does it hold up on months it has not seen?</h2>
+    <p class="sub" id="validation-sub"></p>
+    <div class="validate">
+      <div class="card"><h3 class="ct">MODIS rescaled against what VIIRS saw</h3><p class="cs" id="v-sub"></p><div id="chart-validate"></div></div>
+      <div class="score" id="score"></div>
+    </div>
+    <p class="fineprint">These scores show how well MODIS-derived counts reproduce VIIRS where both exist. They cannot prove that the relationship was the same before 2012.</p>
+  </div>
+</section>
+
+<section id="continuity" class="band alt-band" style="border-top:0">
+  <div class="wrap">
+    <h2>What happens after Suomi NPP stops</h2>
+    <p class="sub" id="continuity-sub"></p>
+    <div class="validate">
+      <div class="card"><h3 class="ct">NOAA-20 and NOAA-21 rescaled to Suomi NPP</h3><p class="cs" id="c-sub"></p><div id="chart-continuity"></div></div>
+      <div class="score" id="score-noaa"></div>
+    </div>
+    <p class="fineprint" id="continuity-note"></p>
+  </div>
+</section>
+
+<section class="band" style="border-top:0">
+  <div class="wrap">
+    <h2>What this is, and what it is not</h2>
+    <div class="limits">
+      <div><h3>Estimates before 2012</h3><p>Early years are MODIS rescaled to VIIRS terms. That assumes the relationship measured since 2012 also held earlier.</p></div>
+      <div><h3>Terra-only months</h3><p>November 2000 to June 2002 rest on one more scaling step and are the least certain part of the record.</p></div>
+      <div><h3>Detections, not burned area</h3><p>Counts depend on cloud, overpass time and fire size, and include agricultural burning.</p></div>
+      <div><h3>The newest months</h3><p>Near-real-time files carry no fire-type flag. We remove cells that the standard archive marks as flares or industry, which catches about 96% of them and also drops about 8% of true vegetation fires.</p></div>
+      <div><h3>Coverage</h3><p id="coverage-note">The map and the pipeline cover the whole world; other regions are added as their data arrives.</p></div>
+    </div>
+    <div class="cta-band" style="margin-top:36px">
+      <p style="font-size:1.15rem;font-weight:600">See it for a place you care about.</p>
+      <a class="btn" href="explore.html">Open the explorer</a>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="foot wrap">Data: NASA FIRMS, MODIS Collection 6.1 and VIIRS 375 m. Built for the 2026 NASA Space Apps Challenge.</footer>
+
+<script src="vendor/d3.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/ramps.js"></script>
+<script src="js/tooltip.js"></script>
+<script src="js/charts/line.js"></script>
+<script src="js/charts/scatter.js"></script>
+<script src="js/charts/calendar.js"></script>
+<script src="js/story.js"></script>
+</body>
+</html>

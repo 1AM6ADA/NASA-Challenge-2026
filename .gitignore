@@ -1,0 +1,8 @@
+.env
+.venv/
+__pycache__/
+logs/
+# raw downloads (1.6 GB) and cleaned points (2 GB) are rebuilt with pipeline/01_* and 02_clean.py
+data/raw/
+data/clean/
+data/export/

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Burning Calendar Explorer</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body class="app">
+<header class="bar">
+  <a class="brand" href="index.html"><i></i><span>Burning Calendar</span></a>
+  <nav><a href="index.html">Story</a><a href="explore.html" aria-current="page">Explorer</a></nav>
+  <span class="spacer"></span>
+  <button class="iconbtn" id="fs" aria-label="Full screen" title="Full screen">
+    <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+  </button>
+  <button class="iconbtn" id="theme" aria-label="Toggle light and dark theme" title="Theme">
+    <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</header>
+
+<div class="shell">
+  <section class="stage" id="stage" aria-label="Map">
+    <canvas id="map-canvas"></canvas>
+    <svg id="map-svg" aria-label="Interactive map"></svg>
+
+    <div class="float place">
+      <label for="place">Place</label>
+      <select id="place"><option value="all">All loaded data</option><option value="custom" disabled hidden>Custom area</option></select>
+      <button class="clear" id="clear-sel" hidden title="Back to all loaded data" aria-label="Clear the selection">Clear ✕</button>
+    </div>
+
+    <div class="float seg metric" role="group" aria-label="Map shows">
+      <button data-metric="density" aria-pressed="true">Per 1000 km²</button>
+      <button data-metric="count" aria-pressed="false">Count</button>
+      <button data-metric="anomaly" aria-pressed="false">Vs normal</button>
+    </div>
+
+    <div class="float toolbar" role="toolbar" aria-label="Map tools">
+      <button data-tool="pan" aria-pressed="true" title="Move the map"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg><span>Move</span></button>
+      <button data-tool="rect" aria-pressed="false" title="Draw a box"><svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1.5" stroke-dasharray="3 2.5"/></svg><span>Box</span></button>
+      <button data-tool="poly" aria-pressed="false" title="Draw a shape"><svg viewBox="0 0 24 24"><path d="M5 18l2-11 8-3 4 8-5 7z" stroke-dasharray="3 2.5"/></svg><span>Shape</span></button>
+      <button data-tool="country" aria-pressed="false" title="Pick a country"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c3 3.2 3 13.8 0 17M12 3.5c-3 3.2-3 13.8 0 17"/></svg><span>Country</span></button>
+      <hr>
+      <button data-zoom="1.6" title="Zoom in" aria-label="Zoom in"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>In</span></button>
+      <button data-zoom="0.625" title="Zoom out" aria-label="Zoom out"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><span>Out</span></button>
+      <button id="home" title="Clear the selection and reset the view" aria-label="Clear the selection and reset the view"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7M6 10v10h12V10"/></svg><span>Reset</span></button>
+    </div>
+
+    <div class="float hint" id="hint"></div>
+    <div class="float legend-card"><div class="scale" id="legend"></div></div>
+
+    <div class="float timeline">
+      <div class="tl-ctl">
+        <button class="iconbtn" id="prev" aria-label="Previous month" title="Previous month (←)"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button class="iconbtn" id="play" aria-label="Play through months" title="Play (space)"><svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg></button>
+        <button class="iconbtn" id="next" aria-label="Next month" title="Next month (→)"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+        <div class="tl-month"><b id="month-label"></b><span id="month-src"></span></div>
+      </div>
+      <div class="tl-chart" id="timeline"></div>
+    </div>
+  </section>
+
+  <aside class="side" aria-label="Analysis">
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
+      <button role="tab" data-tab="compare" aria-selected="false">Compare</button>
+      <button role="tab" data-tab="data" aria-selected="false">Data</button>
+    </div>
+
+    <div class="panel" id="tab-overview">
+      <div class="kpi">
+        <div class="kpi-top"><span class="kpi-area" id="area-name"></span><span class="pill" id="kpi-pill"></span></div>
+        <h2 id="kpi-head"></h2>
+        <p id="kpi-body"></p>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="sec">
+        <div class="sec-h"><h3>Burning calendar</h3>
+          <div class="seg" role="group" aria-label="Calendar shows">
+            <button data-cal="count" aria-pressed="true">Fire days</button><button data-cal="anomaly" aria-pressed="false">Vs normal</button>
+          </div></div>
+        <p class="sec-sub">Each square is a month. Click one to show it on the map.</p>
+        <div id="calendar"></div>
+        <div class="scale" id="cal-legend"></div>
+      </div>
+      <div class="sec"><div class="sec-h"><h3>Season</h3></div><p class="sec-sub">The chosen year against a typical one.</p><div id="season"></div></div>
+    </div>
+
+    <div class="panel" id="tab-compare" hidden>
+      <div class="sec">
+        <h3>Compare two places or times</h3>
+        <p class="sec-sub">Pin what you see now as A, change the place or the month, then pin B.</p>
+        <div class="pinrow">
+          <button class="btn" id="pin-a">Pin current as A</button>
+          <button class="btn ghost" id="pin-b">Pin current as B</button>
+          <button class="btn ghost" id="swap" aria-label="Swap A and B">Swap</button>
+        </div>
+        <div class="slots" id="slots"></div>
+        <p class="verdict" id="verdict"></p>
+        <div id="cmp-chart"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="tab-data" hidden>
+      <div class="sec">
+        <h3>Download</h3>
+        <p class="sec-sub">Raw hotspots inside the selected place, or the monthly series.</p>
+        <div class="row">
+          <select id="dl-range" aria-label="Period"><option value="month">Chosen month</option><option value="year">Chosen year</option><option value="all">All years</option></select>
+          <select id="dl-sensor" aria-label="Sensor"><option value="all">MODIS + VIIRS</option><option value="MODIS">MODIS only</option><option value="VIIRS">VIIRS only</option></select>
+        </div>
+        <div class="row"><a class="btn" id="dl-points" href="#">Hotspots (CSV)</a><a class="btn ghost" id="dl-series" href="#">Monthly series (CSV)</a></div>
+        <p class="sec-sub" id="dl-hint"></p>
+      </div>
+      <div class="sec">
+        <h3>Coverage</h3>
+        <p class="sec-sub">The map covers the world. Data is added region by region.</p>
+        <ul class="cov" id="coverage"></ul>
+      </div>
+      <div class="sec">
+        <h3>How the numbers are made</h3>
+        <p class="sec-sub">One unit everywhere: 1&nbsp;km cells with fire on a day, MODIS rescaled to VIIRS. <a href="index.html#harmonize">Read the method</a>.</p>
+        <details class="tbl"><summary>View the calendar as a table</summary><div class="wrap" id="cal-table"></div></details>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/ramps.js"></script>
+<script src="js/tooltip.js"></script>
+<script src="js/charts/line.js"></script>
+<script src="js/charts/calendar.js"></script>
+<script src="js/charts/season.js"></script>
+<script src="js/charts/timeline.js"></script>
+<script src="js/map/map.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
