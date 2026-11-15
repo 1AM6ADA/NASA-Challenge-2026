@@ -5,12 +5,50 @@ FC.fmt = d3.format(",.0f");
 FC.fmt1 = d3.format(",.1f");
 FC.monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-FC.load = async function () {
-  const [meta, series, buf] = await Promise.all([
-    fetch("data/meta.json").then(r => r.json()),
-    fetch("data/series.json").then(r => r.json()),
-    fetch("data/matrix.bin").then(r => r.arrayBuffer()),
-  ]);
+// Shown while the data downloads, so a slow connection looks like waiting and not like a broken page.
+FC.loader = function () {
+  const el = document.createElement("div");
+  el.setAttribute("role", "status");
+  el.style.cssText = "position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:var(--bg,#fff);color:var(--ink,#111);font:500 1rem system-ui,sans-serif;text-align:center;padding:24px";
+  el.innerHTML = '<div><div style="font-weight:700;font-size:1.2rem">Loading the fire record…</div><div id="load-msg" style="margin-top:10px;color:var(--muted,#666)"></div>'
+    + '<div style="margin:14px auto 0;width:min(320px,70vw);height:6px;border-radius:3px;background:rgba(128,128,128,.25);overflow:hidden"><i id="load-bar" style="display:block;height:100%;width:0;background:#e8590c;transition:width .2s"></i></div></div>';
+  document.body.appendChild(el);
+  return {
+    set(frac, msg) { document.getElementById("load-bar").style.width = Math.round(frac * 100) + "%"; document.getElementById("load-msg").textContent = msg; },
+    done() { el.remove(); },
+    fail(e) { el.querySelector("div").innerHTML = "<b>The data could not be loaded.</b><br>Check the connection and reload. (" + e + ")"; },
+  };
+};
+
+FC.fetchBytes = async function (url, onProgress) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(url + " " + r.status);
+  if (!r.body || !r.body.getReader) return r.arrayBuffer();
+  const reader = r.body.getReader(), parts = [];
+  let got = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    parts.push(value); got += value.length; onProgress(got);
+  }
+  const out = new Uint8Array(got);
+  let o = 0;
+  for (const p of parts) { out.set(p, o); o += p.length; }
+  return out.buffer;
+};
+
+FC.load = async function (opts = {}) {
+  const ui = FC.ui = FC.loader();
+  let meta, series, buf;
+  try {
+    ui.set(0.02, "Starting…");
+    meta = await fetch("data/meta.json").then(r => r.json());
+    const want = meta.tiles.length * meta.months.length * 2;  // bytes of matrix.bin once unzipped
+    [series, buf] = await Promise.all([
+      fetch("data/series.json").then(r => r.json()),
+      FC.fetchBytes("data/matrix.bin", got => ui.set(0.05 + 0.9 * Math.min(1, got / want), `${(got / 1e6).toFixed(1)} of ${(want / 1e6).toFixed(0)} MB. A slow connection can take a few minutes.`)),
+    ]);
+  } catch (e) { ui.fail(e.message || e); throw e; }
   FC.meta = meta;
   FC.countries = await fetch("data/countries.json").then(r => (r.ok ? r.json() : [])).catch(() => []);
   FC.countries = FC.countries.filter(c => c.tiles.length > 0);
@@ -20,6 +58,7 @@ FC.load = async function () {
   FC.Mo = meta.months.length;
   FC.T = meta.tiles.length;
   FC.mat = Float32Array.from(new Uint16Array(buf), v => v / (meta.scale || 1)); // fixed-point on disk
+  if (opts.keepLoader) ui.set(0.97, "Drawing the map…"); else ui.done();
   FC.year = meta.months.map(m => +m.slice(0, 4));
   FC.cal = meta.months.map(m => +m.slice(5, 7) - 1);
   FC.date = meta.months.map(m => new Date(m + "-01T00:00:00Z"));

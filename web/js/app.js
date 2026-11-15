@@ -6,7 +6,7 @@
     const d = document;
     (d.fullscreenElement ? d.exitFullscreen() : d.documentElement.requestFullscreen()).catch(() => { /* not allowed here */ });
   });
-  await FC.load();
+  await FC.load({ keepLoader: true });
 
   const last = FC.Mo - 1;
   let ready = false; // the map reports its first selection before the panels below exist
@@ -30,6 +30,7 @@
     },
   });
   FC.map = map; // exposed for profiling
+  FC.ui.done();
   map.setMonth(app.m);
   place.addEventListener("change", () => { if (place.value === "all") { map.selectAll(); map.home(); } else map.selectCountry(place.value); });
 
