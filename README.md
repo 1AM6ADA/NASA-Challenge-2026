@@ -139,3 +139,6 @@ everything works except the raw-hotspot CSV download, which returns nothing.
 ## Credits
 Hotspots: NASA FIRMS (MODIS Collection 6.1, VIIRS 375 m). Boundaries: Natural Earth via world-atlas. Basemap and charts: D3.
 Built by Muhammadjon Aslonov for the 2026 NASA Space Apps Challenge.
+
+## License
+MIT, see [LICENSE](LICENSE).
