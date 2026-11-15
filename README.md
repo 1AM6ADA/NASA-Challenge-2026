@@ -5,7 +5,8 @@
 so that the sensor of origin stops mattering and the seasons, anomalies and trends are what you see.
 The website is also the presentation.
 
-> **Live site:** https://1am6ada.github.io/NASA-Challenge-2026/  ·  **Demo video:** [docs/demo.mp4](docs/demo.mp4)
+> **Live site:** https://1am6ada.github.io/NASA-Challenge-2026/  ·  **Demo video (2 min, narrated):** [docs/demo.mp4](docs/demo.mp4)  ·  **25-second cut:** [docs/demo-30s.mp4](docs/demo-30s.mp4)
+> (narration is a synthetic voice, subtitles in [docs/demo.srt](docs/demo.srt); the GIF below is the short cut)
 > (the hotspot-CSV download needs the local server, see [Run it](#run-it))
 
 > **Why only part of the world is loaded:** the full FIRMS download is tens of gigabytes, and the internet in Dushanbe, Tajikistan, where this was built, is slow (about 3 KB/s for some large downloads). Central Asia, Europe and South Asia finished; East Asia is partial. The pipeline and the map are world-wide, so adding a region is one command (`python3 pipeline/01_world.py africa`) on a faster connection.
@@ -30,6 +31,7 @@ The website is also the presentation.
 ![Story hero](docs/img/story-hero.png)
 ![Both sensors, same unit](docs/img/story-harmonize.png)
 ![Validation on held-back months](docs/img/story-validation.png)
+![Region by region, and does a calibration travel?](docs/img/story-xval.png)
 ![NOAA-20 and NOAA-21 continuity](docs/img/story-continuity.png)
 
 ### Explorer: map, calendar, season, compare, download
@@ -38,6 +40,8 @@ The website is also the presentation.
 | Country (India: Punjab residue burning, Oct-Nov) | Custom drawn area |
 |---|---|
 | ![India](docs/img/explorer-india.png) | ![Box](docs/img/explorer-box.png) |
+
+![Most above normal list and share link](docs/img/explorer-alerts.png)
 
 | Anomaly against a normal month | Calendar as anomaly |
 |---|---|

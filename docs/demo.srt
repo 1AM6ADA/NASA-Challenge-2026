@@ -1,0 +1,59 @@
+1
+00:00:00,700 --> 00:00:06,945
+Burning Calendar. Twenty-six years of satellite fire, on one consistent scale.
+
+2
+00:00:07,845 --> 00:00:16,640
+Satellites have watched fire from space for more than two decades. But the two sensors that did it, MODIS and VIIRS, do not count the same way.
+
+3
+00:00:17,540 --> 00:00:27,100
+MODIS sees one kilometre pixels. VIIRS sees three hundred seventy five metres, from newer satellites. Side by side, the two records disagree.
+
+4
+00:00:28,000 --> 00:00:35,985
+So we count one unit, a one kilometre cell with fire on a day, and rescale MODIS onto VIIRS using the years when both were flying.
+
+5
+00:00:36,885 --> 00:00:44,350
+We test it on months the model never saw. The error falls from seventy percent to ten, and the fit reaches point nine seven.
+
+6
+00:00:45,250 --> 00:00:51,775
+Then we check region by region, and show openly that a ratio borrowed from another region does not hold.
+
+7
+00:00:52,675 --> 00:00:59,808
+The result is an explorer. Step through twenty six years of burning on the map, one month at a time.
+
+8
+00:01:00,708 --> 00:01:10,443
+For emergency managers the first question is simple. How does this month compare with a normal one? Here, November so far is nineteen percent below normal.
+
+9
+00:01:11,343 --> 00:01:18,433
+Every square of the calendar is a month. Switch to anomaly, and the map shows where fire is above or below its own normal.
+
+10
+00:01:19,333 --> 00:01:27,983
+The list ranks the countries that are unusual in the chosen month. Open India, and the October peak of crop residue burning in Punjab stands out.
+
+11
+00:01:28,883 --> 00:01:32,978
+Draw your own area on the map, and every number updates for it.
+
+12
+00:01:33,878 --> 00:01:38,373
+Pin two places, or two moments, and compare them side by side.
+
+13
+00:01:39,273 --> 00:01:45,133
+Download the raw hotspots as a C S V, or the monthly series, with a table view of the calendar.
+
+14
+00:01:46,033 --> 00:01:51,083
+It works in light and dark, and everything is precomputed, so it loads fast.
+
+15
+00:01:51,983 --> 00:02:02,788
+Only three regions are loaded so far, because of slow internet in Dushanbe. The pipeline is ready for the whole world. Made with Claude Code, for coding. Burning Calendar.
