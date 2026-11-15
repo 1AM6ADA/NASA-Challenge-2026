@@ -77,7 +77,7 @@ web/data/*   ──►  static site (D3, canvas hex map)    +   api/server.py (o
 3. **One counting unit.** A unique **1 km cell with fire on a given day**, per sensor family. VIIRS 375 m pixels that fall into
    one 1 km cell the same day count once. This is what makes the two sensors comparable at all.
 4. **Calibrate.** On the overlap 2012-02..2018-12, MODIS (Terra + Aqua) is fitted to VIIRS SNPP per calendar month.
-   Three models are tried (pooled ratio, shrunk per-tile ratio, log-log); the one with the lowest error on 2019-2026 months
+   Four models are tried (pooled ratio, shrunk per-tile ratio, per-tile ratio shrunk through a 2-degree block, log-log); the one with the lowest error on 2019-2026 months
    that were **held out** is kept. Terra-only months (2000-11..2002-06) are first scaled to Terra + Aqua.
 5. **Continue past SNPP.** NOAA-20 and NOAA-21 are calibrated against SNPP the same way, so the series continues
    when SNPP data stops. The running month is shown as partial and compared with a pro-rated normal.
@@ -104,17 +104,17 @@ or with Docker:
 
 Rebuild the derived data from what is committed (works right after `git clone`):
 
-    python3 pipeline/04_calibrate.py && python3 pipeline/05_harmonize.py \
-      && python3 pipeline/06_export.py && python3 pipeline/07_countries.py
+    python3 pipeline/run_all.py --from 04      # runs 04-07 with timing, then pipeline/validate.py
     # or: docker compose --profile pipeline run --rm pipeline
 
 Rebuild everything from NASA (needs a free FIRMS MAP_KEY in `.env` as `FIRMS_MAP_KEY=...`, about 1.6 GB of downloads):
 
     python3 pipeline/01_world.py [region ...]     # resumable; pipeline/world_forever.sh keeps it going unattended
-    python3 pipeline/02_clean.py && python3 pipeline/03_aggregate.py
-    python3 pipeline/04_calibrate.py ... 07_countries.py
+    python3 pipeline/run_all.py                # 02 clean (one year at a time, low memory) ... 07, then validate
 
-Needs Python 3 with **pandas and numpy only**. The front end is plain JS + D3, no build step.
+Tests: `python3 -m unittest discover -s tests`. GitHub Actions runs them and the 04-07 rebuild plus validation on every push. `pipeline/validate.py` checks the built data (contiguous months, matrix size, series agree with the matrix, calibration quality on held-out months) and fails loudly.
+
+Needs Python 3 with **pandas and numpy only** (`requirements.txt`). The front end is plain JS + D3, no build step.
 
 ## Data in this repository
 Committed: `web/data/`, `data/agg/` (tile x month counts as `.pkl.xz`, calibration, harmonized series) and

@@ -24,6 +24,13 @@
       "region_mape_pct": 9.717471706727093,
       "region_bias_pct": -0.8677015378397712
     },
+    "block_ratio": {
+      "tile_mae": 1216.786915627224,
+      "tile_corr": 0.9125413754019907,
+      "region_r2": 0.9738610391461887,
+      "region_mape_pct": 9.997860972166214,
+      "region_bias_pct": 2.1529686444460294
+    },
     "loglog": {
       "tile_mae": 1439.3236120599872,
       "tile_corr": 0.8709256291842264,
@@ -73,6 +80,13 @@
           "region_mape_pct": 6.392722123310973,
           "region_bias_pct": 3.839080140634721
         },
+        "block_ratio": {
+          "tile_mae": 669.4312075348864,
+          "tile_corr": 0.9848720247052183,
+          "region_r2": 0.9916306934949496,
+          "region_mape_pct": 6.4188229740703635,
+          "region_bias_pct": 3.842970287830849
+        },
         "loglog": {
           "tile_mae": 1022.6180626880532,
           "tile_corr": 0.9299204366046413,
@@ -107,6 +121,13 @@
           "region_r2": 0.9706346211539154,
           "region_mape_pct": 6.673695063134208,
           "region_bias_pct": 5.720363963636066
+        },
+        "block_ratio": {
+          "tile_mae": 490.03483494606115,
+          "tile_corr": 0.9222662909412123,
+          "region_r2": 0.9652435157740048,
+          "region_mape_pct": 7.250851338333309,
+          "region_bias_pct": 6.070806550677665
         },
         "loglog": {
           "tile_mae": 567.2581581097535,
