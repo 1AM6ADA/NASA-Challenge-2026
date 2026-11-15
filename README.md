@@ -18,9 +18,9 @@ The website is also the presentation.
 | Calendar of hotspot counts from the early 2000s to now | Burning calendar (months x years) in the Explorer, Nov 2000 - Nov 2026 |
 | Select a region and date range | Draw a **box** or **shape**, pick a **country**, step or play through months, choose month/year/all for downloads |
 | Compare the current month with the historical median | Headline card ("19% below a normal November so far"), **Vs normal** map and calendar, Season chart |
-| Colour ramps for similarities and differences | Sequential ramp for counts, diverging ramp for anomalies, colour-blind-safe, light and dark theme |
+| Colour ramps for similarities and differences | Sequential ramp for counts, diverging ramp for anomalies, light and dark theme |
 | Downloadable CSV of hotspots | **Data** tab: raw hotspots in the selected area (CSV), plus the monthly series (CSV) |
-| Accessible, interactive | Keyboard (arrows, space), ARIA labels, table view of the calendar, works at phone width |
+| Accessible, interactive | Keyboard (arrows, space), ARIA labels, table view of the calendar |
 
 ### Story page: why the records cannot be compared, and how they are
 ![Story hero](docs/img/story-hero.png)
